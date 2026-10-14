@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import UserManagement from './features/admin/components/UserManagement'
 import ReportTemplateManagement from './features/admin/components/ReportTemplateManagement'
 import TatMis from './features/admin/components/TatMis'
+import AuditHistory from './features/admin/components/AuditHistory'
 import LoginForm from './features/auth/components/LoginForm'
 import DashboardSummary from './features/dashboard/components/DashboardSummary'
 import PatientDetails from './features/patients/components/PatientDetails'
@@ -36,7 +37,7 @@ function App() {
   const [openReportScanId, setOpenReportScanId] = useState<string | null>(null)
   const [isChoosingPatientToSchedule, setIsChoosingPatientToSchedule] = useState(false)
   const [isEditingPatient, setIsEditingPatient] = useState(false)
-  const [activeSection, setActiveSection] = useState<'dashboard' | 'worklist' | 'calendar' | 'users' | 'templates' | 'mis'>('dashboard')
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'worklist' | 'calendar' | 'users' | 'templates' | 'mis' | 'audit'>('dashboard')
   const [calendarRange, setCalendarRange] = useState(() => {
     const now = new Date()
     return { start: dateKey(new Date(now.getFullYear(), now.getMonth(), 1)), end: dateKey(new Date(now.getFullYear(), now.getMonth() + 1, 0)) }
@@ -274,8 +275,9 @@ function App() {
           {user.role === 'admin' && <button type="button" onClick={() => { setIsChoosingPatientToSchedule(false); setActiveSection('users') }} className={`rounded-lg px-4 py-2 text-sm font-semibold ${activeSection === 'users' ? 'bg-blue-600 text-white' : 'border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200'}`}>User management</button>}
           {user.role === 'admin' && <button type="button" onClick={() => { setIsChoosingPatientToSchedule(false); setActiveSection('templates') }} className={`rounded-lg px-4 py-2 text-sm font-semibold ${activeSection === 'templates' ? 'bg-blue-600 text-white' : 'border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200'}`}>Report templates</button>}
           {user.role === 'admin' && <button type="button" onClick={() => { setIsChoosingPatientToSchedule(false); setActiveSection('mis') }} className={`rounded-lg px-4 py-2 text-sm font-semibold ${activeSection === 'mis' ? 'bg-blue-600 text-white' : 'border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200'}`}>MIS · TAT</button>}
+          {user.role === 'admin' && <button type="button" onClick={() => { setIsChoosingPatientToSchedule(false); setActiveSection('audit') }} className={`rounded-lg px-4 py-2 text-sm font-semibold ${activeSection === 'audit' ? 'bg-blue-600 text-white' : 'border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200'}`}>Audit history</button>}
         </nav>
-        {activeSection === 'users' && user.role === 'admin' ? <UserManagement /> : activeSection === 'templates' && user.role === 'admin' ? <ReportTemplateManagement /> : activeSection === 'mis' && user.role === 'admin' ? <TatMis /> : activeSection === 'worklist' && isRadiologist ? (
+        {activeSection === 'users' && user.role === 'admin' ? <UserManagement /> : activeSection === 'templates' && user.role === 'admin' ? <ReportTemplateManagement /> : activeSection === 'mis' && user.role === 'admin' ? <TatMis /> : activeSection === 'audit' && user.role === 'admin' ? <AuditHistory onOpenStudy={(patientId, scanId) => { setSelectedWorklistScanId(scanId); setOpenReportScanId(null); setSelectedPatientId(patientId) }} /> : activeSection === 'worklist' && isRadiologist ? (
           <RadiologistWorklist onOpenStudy={(patientId, scanId, openReport) => {
             setSelectedWorklistScanId(scanId)
             setOpenReportScanId(openReport ? scanId : null)
@@ -465,6 +467,7 @@ function App() {
             queryClient.invalidateQueries({ queryKey: ['reporting-worklist'] })
             queryClient.invalidateQueries({ queryKey: ['dashboard-summary'] })
             queryClient.invalidateQueries({ queryKey: ['scan-calendar'] })
+            queryClient.invalidateQueries({ queryKey: ['audit-events'] })
           }}
           startWithScheduleForm={isChoosingPatientToSchedule}
           focusedScanId={selectedWorklistScanId}

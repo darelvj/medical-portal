@@ -167,6 +167,34 @@ export interface TatReport {
   studies: TatStudy[]
 }
 
+export type AuditCategory = 'all' | 'assignment' | 'report' | 'tat'
+
+export interface AuditEvent {
+  id: string
+  occurred_at: string
+  action: string
+  label: string
+  detail: string
+  actor_name: string
+  scan_id: string
+  study_uid: string
+  modality: string
+  patient_id: string
+  patient_name: string
+}
+
+export interface AuditEventPage {
+  data: AuditEvent[]
+  total: number
+  pagination: { page: number; per_page: number; pages: number }
+}
+
+export async function getAuditEvents(filters: { category: AuditCategory; search: string; page: number; per_page: number }): Promise<AuditEventPage> {
+  const query = new URLSearchParams()
+  Object.entries(filters).forEach(([key, value]) => { if (value !== '') query.set(key, String(value)) })
+  return apiFetch<AuditEventPage>(`/admin/audit-events?${query}`)
+}
+
 export interface PatientRecord {
   id: string
   name: string

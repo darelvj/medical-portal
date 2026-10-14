@@ -6,7 +6,7 @@ A demo medical imaging workflow built with React, TypeScript, Vite, Tailwind CSS
 
 - Cookie-based sign-in and logout, with session restoration through `/api/auth/me`. The browser never reads or stores the JWT.
 - Tenant-scoped patient search, filtering, pagination, study details, and patient editing.
-- Role-based administration, user management, scan assignment, and radiologist worklists.
+- Role-based administration, user management, scan assignment, radiologist worklists, and an admin-only study audit timeline.
 - Structured drafts, reusable report templates, second review, QA, and signing workflow.
 - Scan scheduling and calendar, plus turnaround-time (TAT) metrics and an admin MIS view.
 - Light/dark preference after sign-in; the login page keeps its own fixed design.
